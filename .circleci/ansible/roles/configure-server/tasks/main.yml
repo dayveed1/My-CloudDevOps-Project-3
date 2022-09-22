@@ -1,0 +1,53 @@
+---
+- name: 'update apt packages'
+  become: true
+  apt:
+    update_cache: yes
+
+# - name: 'install nodejs'
+#   become: yes
+#   shell: |
+#     curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+#     sudo apt-get install -y nodejs
+#     node --version
+#     npm --version
+
+- name: Download and Install Node source
+  shell: |
+    curl -sl https://deb.nodesource.com/setup_13.x | sudo -E bash -
+
+- name: install nodejs and npm
+  shell: |
+    sudo apt-get install -y nodejs
+
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
+
+
+# - name: Download and Install Node source
+#   shell: |
+#     curl -sl https://deb.nodesource.com/setup_13.x | sudo -E bash -
+
+# - name: install nodejs and npm
+#   shell: |
+#     sudo apt-get install -y nodejs
+
+
+# - name: "install pm2"
+#   become: yes
+#   npm:
+#     name: pm2
+#     global: yes
+#     production: yes
+#     state: present
+
+# - name: "move env variables to /etc/profile.d/"
+#   become: true 
+#   copy: 
+#     src: myenv.sh
+#     dest: /etc/profile.d/

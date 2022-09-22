@@ -1,0 +1,89 @@
+---
+- name: Make backend-app directory
+  file:
+    path: /home/ubuntu/backend-app
+    state: directory
+
+# - name: 'copy zipped file'
+#   become: yes
+#   copy:
+#     src: /home/circleci/project/artifact.tar.gz
+#     dest: /home/ubuntu/artifact.tar.gz
+
+- name: 'Where are we?'
+  become: yes
+  shell: pwd && ls -la && echo 'May be we are here...'
+  
+# extract the tar/zipped file
+- name: 'extract the tar/zipped file'
+  unarchive:
+    src: /home/circleci/project/artifact.tar.gz
+    dest: /home/ubuntu/backend-app
+    # owner: ubuntu
+    # group: ubuntu
+
+# install backend dependencies
+- name: 'install backend-app dependencies'
+  become: true
+  shell: |
+    cd /home/ubuntu/backend-app
+    npm install
+
+# - name: 'stop all running node processes'
+#   become: true
+#   ignore_errors: true
+#   command: pm2 stop default # this 
+    
+# start the app
+- name: 'start the app'
+  become: true
+  shell: |
+    cd /home/ubuntu/backend-app
+    pm2 start npm -- start
+  register: backend_app
+
+- debug:
+    msg: "{{ backend_app.stdout_lines }}"
+
+
+
+
+# - name: "Creates backend app directory"
+#   file:
+#     path: ~/backend-app
+#     state: directory
+
+# - name: "Unarchive backend files"
+#   unarchive:
+#     src: artifact.tar.gz
+#     dest: ~/backend-app
+
+# - name: "Installing Node Dependencies"
+#   shell: |
+#     cd ~/backend-app
+#     npm i
+
+# - name: "Executing Node with PM2"
+#   shell: |
+#     cd ~/backend-app/dist
+
+
+#     cd ../
+#     npm install
+
+#     npm run build
+
+#     sudo npm install forever -g
+#     sudo npm install ts-node -g
+#     forever start -c "ts-node -r tsconfig-paths/register -r dotenv/config src/main.ts" ./
+
+#   register: execute_node
+
+# - name: print message
+#   debug: 
+#     msg: "{{execute_node.stdout_lines}}"
+
+# - name: "Configure pm2 to start as service"
+#   become: true
+#   shell: |
+#     env PATH=$PATH:/usr/local/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
